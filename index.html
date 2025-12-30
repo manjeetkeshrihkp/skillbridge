@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillBridge | On-Chain Internship Matching</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- VARIABLES & RESET --- */
+        :root {
+            --bg-dark: #0a0b14;
+            --bg-card: rgba(20, 22, 35, 0.7);
+            --primary: #6366f1; /* Indigo */
+            --accent: #8b5cf6; /* Violet */
+            --success: #10b981;
+            --error: #ef4444;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 20%);
+        }
+
+        /* --- UTILITIES --- */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .grid { display: grid; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+
+        /* --- ANIMATIONS --- */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+
+        /* --- COMPONENTS --- */
+        
+        /* Navbar */
+        nav {
+            padding: 1.5rem 5%;
+            backdrop-filter: blur(10px);
+            border-bottom: var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        /* Hero Section */
+        header {
+            text-align: center;
+            padding: 4rem 1rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        .highlight {
+            color: var(--accent);
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem 4rem 1rem;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+        }
+
+        /* Sidebar Profile */
+        .profile-card {
+            background: var(--bg-card);
+            border: var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            height: fit-content;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #333, #111);
+            margin: 0 auto 1rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 2px solid var(--accent);
+        }
+
+        .badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .sbt-badge {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid var(--primary);
+            color: #c7d2fe;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: default;
+        }
+
+        .sbt-badge i { color: var(--accent); }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            padding-bottom: 0.5rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tab-btn.active {
+            color: white;
+            font-weight: 600;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        /* Job Cards */
+        .job-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .job-card {
+            background: var(--bg-card);
+            border: var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .job-card:nth-child(1) { animation-delay: 0.1s; }
+        .job-card:nth-child(2) { animation-delay: 0.2s; }
+        .job-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .job-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            background: rgba(30, 32, 50, 0.8);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .role-title { font-size: 1.25rem; font-weight: 600; }
+        .company-name { color: var(--text-muted); font-size: 0.9rem; }
+        
+        .stipend {
+            font-family: 'Space Grotesk', monospace;
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        .requirements {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .req-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Status Indicators */
+        .status-verified { color: var(--success); display: flex; align-items: center; gap: 5px; font-size: 0.9rem; }
+        .status-locked { color: var(--error); display: flex; align-items: center; gap: 5px; font-size: 0.9rem; }
+
+        /* Loader */
+        .loader {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top: 3px solid var(--primary);
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Toast Notification */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: var(--glass-border);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        #toast.show { transform: translateY(0); }
+        #toast.success i { color: var(--success); }
+        #toast.error i { color: var(--error); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-container { grid-template-columns: 1fr; }
+            h1 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="flex items-center justify-between">
+        <div class="logo">
+            <i class="fa-solid fa-link"></i> SkillBridge
+        </div>
+        <button id="connectBtn" class="btn btn-primary" onclick="connectWallet()">
+            <i class="fa-solid fa-wallet"></i> Connect Wallet
+        </button>
+    </nav>
+
+    <header>
+        <h1>Verified Skills.<br> <span class="highlight">Trustless</span> Internships.</h1>
+        <p class="subtitle">The first matching platform where your skills are cryptographically verified via Soulbound Tokens (SBTs). No fake resumes. Instant agreements.</p>
+        <div class="flex justify-center gap-4">
+            <button class="btn btn-primary" onclick="scrollToApp()">Find Internships</button>
+            <button class="btn btn-outline" onclick="issueDemoBadge()">Demo: Mint SBT</button>
+        </div>
+    </header>
+
+    <div id="app" class="dashboard-container">
+        
+        <aside>
+            <div class="profile-card">
+                <div class="avatar" id="userAvatar">
+                    <i class="fa-solid fa-user-astronaut"></i>
+                </div>
+                <h3 id="walletAddress">Not Connected</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">Student / Developer</p>
+                
+                <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
+                
+                <div style="text-align: left;">
+                    <p style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px;">My Verified Badges (SBTs)</p>
+                    <div class="badge-container" id="myBadges">
+                        <span style="font-style: italic; color: #555; font-size: 0.8rem;">No verified skills found.</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main>
+            <div class="tabs">
+                <button class="tab-btn active">Internship Opportunities</button>
+                <button class="tab-btn">My Applications</button>
+            </div>
+
+            <div class="job-list" id="jobFeed">
+                <div class="job-card">
+                    <div class="job-header">
+                        <div>
+                            <div class="role-title">Smart Contract Auditor Intern</div>
+                            <div class="company-name"><i class="fa-solid fa-building"></i> DeFi Secure Protocol</div>
+                        </div>
+                        <div class="stipend">1.5 ETH / mo</div>
+                    </div>
+                    <p style="color: #ccc; font-size: 0.95rem; line-height: 1.5;">
+                        We are looking for a junior auditor to review ERC20 and ERC721 contracts. Automated payout via smart contract upon milestone completion.
+                    </p>
+                    <div class="requirements">
+                        <div class="req-title">Required On-Chain Badge</div>
+                        <div class="flex items-center gap-2">
+                            <span class="sbt-badge"><i class="fa-solid fa-shield-halved"></i> Solidity Security Lvl 1</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mt-3">
+                        <div class="verification-status" id="status-1">
+                            <span class="status-locked"><i class="fa-solid fa-lock"></i> Verification Required</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="applyForJob(1, 'Solidity Security Lvl 1')">
+                            Verify & Apply
+                        </button>
+                    </div>
+                </div>
+
+                <div class="job-card">
+                    <div class="job-header">
+                        <div>
+                            <div class="role-title">Frontend Web3 Developer</div>
+                            <div class="company-name"><i class="fa-solid fa-cube"></i> NFT Marketplace Co.</div>
+                        </div>
+                        <div class="stipend">2000 MATIC</div>
+                    </div>
+                    <p style="color: #ccc; font-size: 0.95rem; line-height: 1.5;">
+                        Build the next generation of NFT minting dApps. Must have experience with React and Ethers.js.
+                    </p>
+                    <div class="requirements">
+                        <div class="req-title">Required On-Chain Badge</div>
+                        <div class="flex items-center gap-2">
+                            <span class="sbt-badge"><i class="fa-brands fa-react"></i> React Expert</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mt-3">
+                        <div class="verification-status" id="status-2">
+                            <span class="status-locked"><i class="fa-solid fa-lock"></i> Verification Required</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="applyForJob(2, 'React Expert')">
+                            Verify & Apply
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">Action Successful</span>
+    </div>
+
+    <script>
+        // --- STATE & DATA ---
+        let isConnected = false;
+        let userBadges = []; // Array to store user's "SBTs"
+
+        // --- DOM ELEMENTS ---
+        const connectBtn = document.getElementById('connectBtn');
+        const walletAddress = document.getElementById('walletAddress');
+        const myBadgesContainer = document.getElementById('myBadges');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+
+        // --- FUNCTIONS ---
+
+        function scrollToApp() {
+            document.getElementById('app').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 1. SIMULATE WALLET CONNECTION
+        function connectWallet() {
+            if (isConnected) return;
+            
+            // Simulation of Metamask Pop-up delay
+            connectBtn.innerHTML = '<span class="loader"></span> Connecting...';
+            
+            setTimeout(() => {
+                isConnected = true;
+                const mockAddress = "0x71C...9A23";
+                
+                // Update UI
+                connectBtn.innerHTML = '<i class="fa-solid fa-wallet"></i> ' + mockAddress;
+                connectBtn.classList.replace('btn-primary', 'btn-outline');
+                walletAddress.innerText = mockAddress;
+                
+                showToast("Wallet Connected Successfully", "success");
+            }, 1000);
+        }
+
+        // 2. DEMO: MINT A BADGE (Simulate University issuing SBT)
+        function issueDemoBadge() {
+            if (!isConnected) {
+                showToast("Please Connect Wallet first!", "error");
+                return;
+            }
+
+            // Simulate blockchain transaction delay
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerHTML = '<span class="loader"></span> Minting...';
+
+            setTimeout(() => {
+                // Add "Solidity Security" badge to user state
+                if (!userBadges.includes("Solidity Security Lvl 1")) {
+                    userBadges.push("Solidity Security Lvl 1");
+                    renderBadges();
+                    showToast("SBT Minted: Solidity Security Lvl 1", "success");
+                } else {
+                    showToast("You already own this Soulbound Token", "error");
+                }
+                btn.innerText = originalText;
+            }, 1500);
+        }
+
+        // Render Badges in Sidebar
+        function renderBadges() {
+            myBadgesContainer.innerHTML = "";
+            userBadges.forEach(badge => {
+                const el = document.createElement('span');
+                el.className = 'sbt-badge';
+                el.innerHTML = `<i class="fa-solid fa-certificate"></i> ${badge}`;
+                myBadgesContainer.appendChild(el);
+            });
+        }
+
+        // 3. APPLY LOGIC (The Core "Smart Contract" Check)
+        function applyForJob(jobId, requiredBadge) {
+            if (!isConnected) {
+                showToast("Connect wallet to verify skills.", "error");
+                return;
+            }
+
+            const statusEl = document.getElementById(`status-${jobId}`);
+            const btn = event.target;
+            const originalText = btn.innerText;
+
+            // UI Feedback: Checking Blockchain...
+            btn.innerHTML = '<span class="loader"></span> Verifying On-Chain...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                // LOGIC: Check if user holds the required SBT
+                if (userBadges.includes(requiredBadge)) {
+                    // SUCCESS MATCH
+                    statusEl.innerHTML = '<span class="status-verified"><i class="fa-solid fa-check-circle"></i> Skill Verified & Matched!</span>';
+                    btn.innerHTML = 'Application Sent';
+                    btn.style.background = 'var(--success)';
+                    showToast("Smart Contract Executed: Matched!", "success");
+                } else {
+                    // FAILED MATCH
+                    statusEl.innerHTML = '<span class="status-locked"><i class="fa-solid fa-circle-xmark"></i> Missing Required SBT</span>';
+                    btn.innerHTML = 'Verification Failed';
+                    btn.style.background = 'var(--error)';
+                    showToast("Error: You lack the required Badge.", "error");
+                    
+                    // Reset button after 2 seconds
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.background = ''; // reset to CSS default
+                        btn.disabled = false;
+                    }, 2000);
+                }
+            }, 1500);
+        }
+
+        // Utility: Show Toast
+        function showToast(msg, type) {
+            toastMsg.innerText = msg;
+            toast.className = type; // success or error
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
